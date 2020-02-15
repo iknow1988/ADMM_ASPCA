@@ -6,15 +6,15 @@ test.rou = rou;
 test.abnormalD = size(Data,2) - d;
 test.n = size(Data,1);
 test.p = size(Data,2);
-X = zeros(test.p,1);
-Y = zeros(test.p,1);
-for n = 1:test.p
-    test.ClassicPC = ClassicalPCA(S);
+X = zeros(test.p-1,1);
+Y = zeros(test.p-1,1);
+for n = 1:test.p-1
+    test.ClassicPC = ClassicPCA(S);
     test.ClassicPC = fliplr(test.ClassicPC);
-    test.ClassicPC = test.ClassicPC(:,1:n);
+    test.ClassicPC = test.ClassicPC(:,1:test.p-n);
     test.aspcabPC = spcaf(S,lambda*100,test.p-n);
     test.ADMMProjection = ADMM_SPCA_AB(S,lambda,test.p-n,rou);
-    test.ADMMPC = FindBasis(Data,test.ADMMProjection,S,anomalies,test.p-n);
+    test.ADMMPC = FindBasis(Data,test.ADMMProjection,S,anomalies,test.p-n,label,0);
     
     yProjected = (Data*test.ADMMPC).^2;
     test.SPE = sum(yProjected,2);
@@ -53,5 +53,5 @@ xlabel('# of normal components');
 ylabel('AUC');
 title(dataset);
 legend('ADMM', 'Classical PCA','ASPCA-B');
-axis([1 test.p 0 1])
+% axis([1 test.p-1 0 1])
 end
